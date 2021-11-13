@@ -1,4 +1,4 @@
-# This is server side code for https://your-dream-place.web.app/
+# This is server side code for https://lens-cart.web.app/
 1.I simply used node.js to created this server \
 2. Used mongodb as database \
 3. Also, i used express, some other third party npm package \
