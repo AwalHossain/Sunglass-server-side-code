@@ -39,9 +39,11 @@ async function run() {
     ///Sending data to the database
     app.post("/addItem", async (req, res) => {
       const data = req.body;
+      console.log(data);
       const result = await lensCollection.insertOne(data);
       res.send(result);
     });
+
     //Fetching specific data with the help of id
     app.get("/glasses/:id", async (req, res) => {
       const id = req.params.id;
@@ -96,7 +98,7 @@ async function run() {
       console.log(updatedStatus);
       const updateDoc = {
         $set: {
-          status: "Approved",
+          status: "Shipped",
         },
       };
       const result = await OrderCollection.updateOne(filter, updateDoc);
@@ -114,6 +116,36 @@ async function run() {
     app.get("/review", async (req, res) => {
       const query = await ReviewCollection.find({}).toArray();
       res.json(query);
+    });
+    //Remove Product
+    app.delete("/removeProduct/:id", async (req, res) => {
+      const id = req.params.id;
+      console.log(id);
+      const query = { _id: ObjectId(id) };
+      const result = await lensCollection.deleteOne(query);
+      res.send(result);
+      console.log(result);
+    });
+    //Make Admin
+    app.put("/users/admin", async (req, res) => {
+      const user = req.body.email;
+      const filter = { email: user };
+      const option = { upsert: true };
+      const updateDoc = { $set: { role: "admin" } };
+      const result = await UserCollection.updateOne(filter, updateDoc);
+      console.log(result);
+      res.send(result);
+    });
+    //Getting the admin
+    app.get("/users/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const user = await UserCollection.findOne(query);
+      let isAdmin = false;
+      if (user?.role === "admin") {
+        isAdmin = true;
+      }
+      res.json({ admin: isAdmin });
     });
   } finally {
     // await client.close();
